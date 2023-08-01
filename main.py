@@ -1,18 +1,13 @@
 import streamlit as st
 from GetInfo import *
+import ssl
 
 
-def display_seasons():
-    
-    competitions_seasons = get_seasons(competition_selected)
-    
-    st.selectbox(
-        'Elige la temporada',
-        competition_seasons
-    )
+ssl._create_default_https_context = ssl._create_unverified_context
+
 
 def web():
-    st.title('Fubol⚽')
+    st.title('Fulbo⚽')
     st.subheader('Estadisticas y graficos de futbol')
     
     competiciones = get_competitions()
@@ -23,20 +18,21 @@ def web():
         key='selected_comp'
     )
     
-    if selected_comp in competiciones:
-        st.write('En efecto este condicional funciona')
-        
-        competition_seasons = get_seasons(selected_comp)
-        season = st.selectbox(
-            'Elige la temporada',
-            competition_seasons,
-            key='season'
-        )
+    seasons = get_seasons(selected_comp)
     
+    selected_season = st.selectbox(
+        "Elige la temporada",
+        seasons,
+        key="selected_season"
+    )
     
+    matches = get_matches(selected_comp, selected_season)
     
-    
-
+    selected_match = st.selectbox(
+        'Elige el partido',
+        matches,
+        key='selected_match'
+    )
 
 if __name__ == "__main__":
     web()
