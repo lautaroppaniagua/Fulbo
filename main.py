@@ -1,9 +1,6 @@
 import streamlit as st
 from GetInfo import *
-import ssl
 
-
-ssl._create_default_https_context = ssl._create_unverified_context
 
 
 def web():
@@ -33,6 +30,8 @@ def web():
         matches,
         key='selected_match'
     )
+    
+    
 
 if __name__ == "__main__":
     web()
