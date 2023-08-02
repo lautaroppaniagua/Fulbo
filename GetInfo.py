@@ -29,13 +29,18 @@ def get_seasons(competition):
 
     return result
 
-def get_arg_matches(selected_season):
+def get_arg_matches(selected_season, TipoDataframe=False):
+
     
     URL_PartidosArg = f'https://fbref.com/es/comps/21/{selected_season}/horario/Marcadores-y-partidos-de-{selected_season}-Primera-Division'
-    matches = pd.read_html(URL_PartidosArg)[0][['Fecha', 'Local', 'Visitante']].dropna().values.tolist()
-    return [match[0] + ' | ' + match[1] + '-' + match[2] for match in matches]
-    
-    
+    matches = pd.read_html(URL_PartidosArg)[0].dropna(subset=['Local'])
+
+    if TipoDataframe:
+        return matches
+    else:
+        matches = matches[['Fecha', 'Local', 'Visitante']].values.tolist()
+        return [match[0] + ' | ' + match[1] + ' - ' + match[2] for match in matches]
+
 
 def get_matches(selected_competition , selected_season):
     
@@ -49,7 +54,23 @@ def get_matches(selected_competition , selected_season):
         competition_id = df.competition_id.item()
         season_id = df.season_id.item()
         matches = sb.matches(competition_id, season_id)[['match_date', 'home_team','away_team','competition_stage']].sort_values('match_date', ascending=False).values.tolist()
-        result = [match[0] + ' | ' + match[1] + '-' + match[2] + ' ' + match[3] for match in matches]
+        result = [match[0] + ' | ' + match[1] + ' - ' + match[2] + ' ' + match[3] for match in matches]
         
     return result
     
+def acces_arg_match(selected_match, selected_season):
+
+    RegexPatterns = {'Fecha': r"^(.*?)\s\|", 'Local': r"\|\s(.*?)\s-\s", 'Visitante': r"- (.*)$"}
+    
+    EquipoLocal = re.search(RegexPatterns['Fecha'], selected_match).group(1)
+    EquipoVisitante = re.search(RegexPatterns['Local'], selected_match).group(1)
+    Fecha = re.search(RegexPatterns['Visitante'], selected_match).group(1)
+    
+    df = get_arg_matches(selected_season, TipoDataframe=True)
+
+    
+
+def access_to_match(selected_competition, selected_season, selected_match):
+    
+    if selected_competition == 'Argentine Primera División':
+        get_arg_matches(selected_season, selected_match)
