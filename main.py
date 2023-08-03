@@ -2,7 +2,6 @@ import streamlit as st
 from GetInfo import *
 
 
-
 def web():
     st.title('Fulbo⚽')
     st.subheader('Estadisticas y graficos de futbol')
@@ -30,6 +29,27 @@ def web():
         matches,
         key='selected_match'
     )
+
+    Report = get_match_report(selected_match, selected_season)
+
+    col1, col2 = st.columns(2)
+
+    with col1:
+        
+        try:
+            st.image(r"src/Argentina/{}.png".format(Report[0].lower().replace(' ', '')), width=350)
+        except:
+            st.image(r'src/sinfoto.png',width=350)
+
+        st.header(Report[0].upper())
+
+    with col2:
+
+        try:
+            st.image(r"src/Argentina/{}.png".format(Report[1].lower().replace(' ', '')), width=350)
+        except:
+            st.image(r'src/sinfoto.png',width=350)
+        st.header(Report[1].upper())
 
     
     

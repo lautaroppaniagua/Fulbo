@@ -3,6 +3,10 @@ from mplsoccer import VerticalPitch, Pitch
 import matplotlib.pyplot as plt
 from statsbombpy import sb
 import ssl
+import re
+import requests
+from bs4 import BeautifulSoup
+
 
 
 ssl._create_default_https_context = ssl._create_unverified_context
@@ -29,11 +33,28 @@ def get_seasons(competition):
 
     return result
 
+def GetMatchesURL_Arg(URL_PartidosArg, df):
+    
+    Data = requests.get(URL_PartidosArg)
+    soup = BeautifulSoup(Data.text, 'html.parser')
+    enlaces = []
+    for enlace in soup.find_all('td', {'data-stat': 'match_report'}):
+        try:
+            enlaces.append('https://fbref.com/' + enlace.a['href'])
+        except:
+            pass
+        
+    return enlaces[:df.index.max()+1]
+    
+    
+    
+
 def get_arg_matches(selected_season, TipoDataframe=False):
 
     
     URL_PartidosArg = f'https://fbref.com/es/comps/21/{selected_season}/horario/Marcadores-y-partidos-de-{selected_season}-Primera-Division'
     matches = pd.read_html(URL_PartidosArg)[0].dropna(subset=['Local'])
+    matches['Informe del partido'] = GetMatchesURL_Arg(URL_PartidosArg, matches)
 
     if TipoDataframe:
         return matches
@@ -58,19 +79,13 @@ def get_matches(selected_competition , selected_season):
         
     return result
     
-def acces_arg_match(selected_match, selected_season):
+def get_match_report(selected_match, selected_season):
 
     RegexPatterns = {'Fecha': r"^(.*?)\s\|", 'Local': r"\|\s(.*?)\s-\s", 'Visitante': r"- (.*)$"}
     
-    EquipoLocal = re.search(RegexPatterns['Fecha'], selected_match).group(1)
-    EquipoVisitante = re.search(RegexPatterns['Local'], selected_match).group(1)
-    Fecha = re.search(RegexPatterns['Visitante'], selected_match).group(1)
+    EquipoLocal = re.search(RegexPatterns['Local'], selected_match).group(1)
+    EquipoVisitante = re.search(RegexPatterns['Visitante'], selected_match).group(1)
+    Fecha = re.search(RegexPatterns['Fecha'], selected_match).group(1)
     
     df = get_arg_matches(selected_season, TipoDataframe=True)
-
-    
-
-def access_to_match(selected_competition, selected_season, selected_match):
-    
-    if selected_competition == 'Argentine Primera División':
-        get_arg_matches(selected_season, selected_match)
+    return [EquipoLocal, EquipoVisitante]
