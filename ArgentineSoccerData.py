@@ -1,6 +1,7 @@
 import pandas as pd
 import requests
 from bs4 import BeautifulSoup
+import re
 
 class ArgentineSoccer:
 
@@ -9,7 +10,7 @@ class ArgentineSoccer:
         df.rename(columns={'Nombre de la competición': 'competition_name', 'Temporada':'season_name'}, inplace=True)
         return df
     
-    def matches(self, season):
+    def matches (self, season):
 
         URL_PartidosArg = f'https://fbref.com/es/comps/21/{season}/horario/Marcadores-y-partidos-de-{season}-Primera-Division'
         matches = pd.read_html(URL_PartidosArg)[0].dropna(subset=['Local']).reset_index()
@@ -29,7 +30,8 @@ class ArgentineSoccer:
         matches.rename(columns={'Fecha':'match_date', 'Local':'home_team', 'Visitante':'away_team'}, inplace=True)
 
         return matches
-    
-    def MatchInfo(self, match_id):
 
-        URL = Matches(season)['Informe del partido']
+    def get_matchreport(matches_df):
+
+        URL = matches_df[(matches_df['match_date'] == date) & (matches_df['home_team'] == local_team)]['Informe del partido']
+        

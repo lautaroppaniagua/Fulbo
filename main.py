@@ -27,6 +27,7 @@ def web():
     )
     
     matches = get_matches(selected_comp, selected_season)
+    matches = (matches.match_date + ' | ' + matches.home_team + ' - ' + matches.away_team)
     
     selected_match = st.selectbox(
         'Elige el partido',
@@ -38,7 +39,6 @@ def web():
 
         Report = get_match_report(selected_match, selected_season, Arg=True)
 
-    Report = get_match_report(selected_match, selected_season)
 
     col1, col2, col3 = st.columns(3)
 
