@@ -5,7 +5,11 @@ from GetInfo import *
 def web():
     st.title('Fulbo⚽')
     st.subheader('Estadisticas y graficos de futbol')
-    
+
+    AnalysisOptions = {
+        
+    }
+
     competiciones = get_competitions()
     
     selected_comp = st.selectbox(
@@ -30,9 +34,18 @@ def web():
         key='selected_match'
     )
 
+    if selected_comp == 'Argentine Primera División':
+
+        Report = get_match_report(selected_match, selected_season, Arg=True)
+
     Report = get_match_report(selected_match, selected_season)
 
-    col1, col2 = st.columns(2)
+    col1, col2, col3 = st.columns(3)
+
+    SelectAnalysisOption = st.radio(
+        "Elige una opcion de analisis",
+        list(AnalysisOptions.keys())
+    )
 
     with col1:
         
@@ -43,7 +56,7 @@ def web():
 
         st.header(Report[0].upper())
 
-    with col2:
+    with col3:
 
         try:
             st.image(r"src/Argentina/{}.png".format(Report[1].lower().replace(' ', '')), width=350)
@@ -51,6 +64,8 @@ def web():
             st.image(r'src/sinfoto.png',width=350)
         st.header(Report[1].upper())
 
+    
+    AnalisisFunction = AnalysisOptions.get()
     
     
     
